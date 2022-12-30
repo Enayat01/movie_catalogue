@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:movie_catalogue/widgets/main_pane.dart';
+import '../data.dart';
 import '../widgets/sort_control.dart';
 import '../widgets/profile_section.dart';
 import '../widgets/search_bar.dart';
@@ -15,6 +17,9 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
+  List<Map<String, dynamic>> data = topChart;
+  int _currentPage = 4;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +32,7 @@ class _AppLayoutState extends State<AppLayout> {
           ),
         ),
 
-        /// Using Backdrop filter to blur the
+        /// Using Backdrop filter to blur the image
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
 
@@ -35,12 +40,12 @@ class _AppLayoutState extends State<AppLayout> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              /// Left pane column
+              /// Left pane column for navigation section
               Container(
                 width: screenWidth(context) * .20,
                 color: Colors.indigo.withOpacity(0.95),
                 child: LeftPane(
-                  selected: 0,
+                  selected: _currentPage,
                   mainNavAction: () {},
                 ),
               ),
@@ -49,9 +54,9 @@ class _AppLayoutState extends State<AppLayout> {
               Expanded(
                 child: Column(
                   children: [
-                    /// Header section
+                    /// Header section with search and profile
                     Container(
-                      height: 120,
+                      height: screenHeight(context) * 0.15,
                       color: Colors.indigo.withOpacity(0.80),
                       child: Row(
                         children: [
@@ -63,22 +68,19 @@ class _AppLayoutState extends State<AppLayout> {
 
                     /// Filter section
                     Container(
-                      height: 120,
+                      height: screenHeight(context) * 0.15,
                       color: Colors.deepPurple.withOpacity(0.60),
                       child: Row(
                         children: [
-                          sortControl(),
+                          sortControl(context),
                         ],
                       ),
                     ),
 
                     /// Main Pane section
-                    const Expanded(
+                    Expanded(
                       child: Center(
-                        child: Text(
-                          "Main Pane Section",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: MainPane(data: data),
                       ),
                     ),
                   ],

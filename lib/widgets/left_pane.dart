@@ -23,7 +23,10 @@ class LeftPane extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.indigo[700],
             border: const Border(
-              bottom: BorderSide(color: Colors.white, width: 4),
+              bottom: BorderSide(
+                color: Colors.white,
+                width: 2,
+              ),
             ),
           ),
           child: Image.asset('assets/images/tmdb.png'),
