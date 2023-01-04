@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:movie_catalogue/models/popular_movies_model.dart';
 
 import '../data.dart';
 
 class MainPane extends StatelessWidget {
-  final List<Map<String, dynamic>> data;
-
-  const MainPane({required this.data, Key? key}) : super(key: key);
+  final List<MovieResults>? movieData;
+  const MainPane({
+    required this.movieData,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-        itemCount: data.length,
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            crossAxisSpacing: 50,
-            mainAxisSpacing: 20,
-            maxCrossAxisExtent: 300,
-            childAspectRatio: 3.2/5
-        ),
-        itemBuilder: (BuildContext context, int index){
-          return Column(
-              children:[
+    return movieData == null || movieData!.isEmpty
+        ? const Center(
+            child: Text('No movies found'),
+          )
+        : GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+            itemCount: movieData?.length,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                crossAxisSpacing: 50,
+                mainAxisSpacing: 20,
+                maxCrossAxisExtent: 300,
+                childAspectRatio: 3.2 / 5),
+            itemBuilder: (BuildContext context, int index) {
+              return Column(children: [
                 Flexible(
                   flex: 1,
                   fit: FlexFit.loose,
@@ -33,14 +38,22 @@ class MainPane extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 3),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 2, horizontal: 3),
                             color: Colors.yellowAccent,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.star,size: 15,),
-                                Text("${data[index]["vote_average"]}",
-                                  style: const TextStyle( fontWeight: FontWeight.bold, fontSize: 17, color: Colors.black),
+                                const Icon(
+                                  Icons.star,
+                                  size: 15,
+                                ),
+                                Text(
+                                  "${movieData?[index].voteAverage}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      color: Colors.black),
                                 ),
                               ],
                             ),
@@ -48,7 +61,8 @@ class MainPane extends StatelessWidget {
                         ),
                       ),
                       child: Image(
-                        image:NetworkImage(pImageBase + data[index]["poster_path"]),
+                        image: NetworkImage(
+                            pImageBase + movieData?[index].posterPath),
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -59,19 +73,20 @@ class MainPane extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text( data[index]["original_title"],
-                          style: const TextStyle(fontSize: 17, color: Colors.white),
+                        Text(
+                          movieData?[index].originalTitle ?? '',
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.white),
                         ),
-                        Text(getGenre(data[index]["genre_ids"]),
-                          style: const TextStyle(fontSize: 15, color: Colors.white60),
+                        Text(
+                          getGenre(movieData![index].genreIds!),
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.white60),
                         ),
                       ],
-                    )
-                ),
-              ]
-          );
-        }
-    );
+                    )),
+              ]);
+            });
   }
 
   String getGenre(List<int> gIndex) {

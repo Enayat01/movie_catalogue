@@ -1,7 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:movie_catalogue/widgets/main_pane.dart';
+import 'package:movie_catalogue/utils/responsive.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/movie_provider.dart';
+import '../widgets/main_pane.dart';
 import '../data.dart';
 import '../widgets/sort_control.dart';
 import '../widgets/profile_section.dart';
@@ -18,11 +22,48 @@ class AppLayout extends StatefulWidget {
 
 class _AppLayoutState extends State<AppLayout> {
   List<Map<String, dynamic>> data = topChart;
-  int _currentPage = 4;
+  final int _currentPage = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+    movieProvider.getPopularMovies();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final movieProvider = Provider.of<MovieProvider>(context);
+    final movieData = movieProvider.popularMoviesModel?.results;
+
     return Scaffold(
+      appBar: ResponsiveWidget.isSmallScreen(context)
+          ? AppBar(
+              backgroundColor: Colors.indigo.withOpacity(0.80),
+              actions: [
+                TextButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Search',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            )
+          : null,
+      drawer: ResponsiveWidget.isSmallScreen(context)
+          ? Drawer(
+              backgroundColor: Colors.indigo.withOpacity(0.80),
+              child: LeftPane(
+                selected: _currentPage,
+                mainNavAction: () {},
+              ),
+            )
+          : null,
       body: Container(
         ///Setting a background image for entire layout
         decoration: const BoxDecoration(
@@ -37,57 +78,59 @@ class _AppLayoutState extends State<AppLayout> {
           filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
 
           /// Main parent row
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              /// Left pane column for navigation section
-              Container(
-                width: screenWidth(context) * .20,
-                color: Colors.indigo.withOpacity(0.95),
-                child: LeftPane(
-                  selected: _currentPage,
-                  mainNavAction: () {},
-                ),
-              ),
-
-              /// Right column for header and main pane
-              Expanded(
-                child: Column(
+          child: ResponsiveWidget.isSmallScreen(context)
+              ? MainPane(movieData: movieData)
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    /// Header section with search and profile
+                    /// Left pane column for navigation section
                     Container(
-                      height: screenHeight(context) * 0.15,
-                      color: Colors.indigo.withOpacity(0.80),
-                      child: Row(
-                        children: [
-                          searchBar(),
-                          profileSection(),
-                        ],
+                      width: screenWidth(context) * .20,
+                      color: Colors.indigo.withOpacity(0.95),
+                      child: LeftPane(
+                        selected: _currentPage,
+                        mainNavAction: () {},
                       ),
                     ),
 
-                    /// Filter section
-                    Container(
-                      height: screenHeight(context) * 0.15,
-                      color: Colors.deepPurple.withOpacity(0.60),
-                      child: Row(
-                        children: [
-                          sortControl(context),
-                        ],
-                      ),
-                    ),
-
-                    /// Main Pane section
+                    /// Right column for header and main pane
                     Expanded(
-                      child: Center(
-                        child: MainPane(data: data),
+                      child: Column(
+                        children: [
+                          /// Header section with search and profile
+                          Container(
+                            height: screenHeight(context) * 0.15,
+                            color: Colors.indigo.withOpacity(0.80),
+                            child: Row(
+                              children: [
+                                searchBar(),
+                                profileSection(),
+                              ],
+                            ),
+                          ),
+
+                          /// Filter section
+                          Container(
+                            height: screenHeight(context) * 0.15,
+                            color: Colors.deepPurple.withOpacity(0.60),
+                            child: Row(
+                              children: [
+                                sortControl(context),
+                              ],
+                            ),
+                          ),
+
+                          /// Main Pane section
+                          Expanded(
+                            child: Center(
+                              child: MainPane(movieData: movieData),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );

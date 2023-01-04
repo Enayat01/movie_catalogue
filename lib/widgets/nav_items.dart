@@ -35,7 +35,7 @@ Widget subNavItem(String title, bool isSelected, VoidCallback action,
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10),
     child: MaterialButton(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       color: isSelected ? Colors.deepPurple.withOpacity(0.15) : null,
       onPressed: action,
       child: Row(
