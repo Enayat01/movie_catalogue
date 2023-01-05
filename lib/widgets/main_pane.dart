@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:movie_catalogue/models/popular_movies_model.dart';
+import 'package:movie_catalogue/models/movies_model.dart';
 
 import '../data.dart';
 
 class MainPane extends StatelessWidget {
   final List<MovieResults>? movieData;
+  final ScrollController scrollController;
   const MainPane({
     required this.movieData,
+    required this.scrollController,
     Key? key,
   }) : super(key: key);
 
@@ -17,6 +19,7 @@ class MainPane extends StatelessWidget {
             child: Text('No movies found'),
           )
         : GridView.builder(
+            controller: scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
             itemCount: movieData?.length,
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -60,11 +63,41 @@ class MainPane extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: Image(
-                        image: NetworkImage(
-                            pImageBase + movieData?[index].posterPath),
-                        fit: BoxFit.fill,
-                      ),
+                      child: movieData?[index].posterPath == null
+                          ? Container(
+                              color: Colors.indigo.withOpacity(0.5),
+                              height: double.infinity,
+                              width: double.infinity,
+                              child: const Center(
+                                child: Text(
+                                  'Image not available',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Image.network(
+                              pImageBase + movieData?[index].posterPath,
+                              fit: BoxFit.fill,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
+                            ),
                     ),
                   ),
                 ),
@@ -74,7 +107,7 @@ class MainPane extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          movieData?[index].originalTitle ?? '',
+                          movieData?[index].title ?? '',
                           style: const TextStyle(
                               fontSize: 17, color: Colors.white),
                         ),

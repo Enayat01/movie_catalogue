@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:movie_catalogue/models/movies_model.dart';
 import 'package:movie_catalogue/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/movie_provider.dart';
 import '../widgets/main_pane.dart';
-import '../data.dart';
 import '../widgets/sort_control.dart';
 import '../widgets/profile_section.dart';
 import '../widgets/search_bar.dart';
@@ -21,20 +21,39 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  List<Map<String, dynamic>> data = topChart;
-  final int _currentPage = 3;
+  int _currentPage = 2;
+  final _scrollController = ScrollController();
+  List<MovieResults>? movieResults;
 
   @override
   void initState() {
     super.initState();
     final movieProvider = Provider.of<MovieProvider>(context, listen: false);
-    movieProvider.getPopularMovies();
+    movieProvider.getPopularMovies(true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent &&
+          !movieProvider.isLoading) {
+        if (movieProvider.page != movieProvider.moviesModel?.totalPages) {
+          setState(() {
+            ++movieProvider.page;
+          });
+          movieProvider.getPopularMovies(false);
+        }
+      }
+    });
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
-    final movieData = movieProvider.popularMoviesModel?.results;
+    final movieData = movieProvider.movieResults;
 
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
@@ -61,6 +80,11 @@ class _AppLayoutState extends State<AppLayout> {
               child: LeftPane(
                 selected: _currentPage,
                 mainNavAction: () {},
+                onItemSelect: (value) {
+                  setState(() {
+                    _currentPage = value;
+                  });
+                },
               ),
             )
           : null,
@@ -79,7 +103,10 @@ class _AppLayoutState extends State<AppLayout> {
 
           /// Main parent row
           child: ResponsiveWidget.isSmallScreen(context)
-              ? MainPane(movieData: movieData)
+              ? MainPane(
+                  movieData: movieData,
+                  scrollController: _scrollController,
+                )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -90,6 +117,7 @@ class _AppLayoutState extends State<AppLayout> {
                       child: LeftPane(
                         selected: _currentPage,
                         mainNavAction: () {},
+                        onItemSelect: (value) => _currentPage = value,
                       ),
                     ),
 
@@ -123,7 +151,10 @@ class _AppLayoutState extends State<AppLayout> {
                           /// Main Pane section
                           Expanded(
                             child: Center(
-                              child: MainPane(movieData: movieData),
+                              child: MainPane(
+                                movieData: movieData,
+                                scrollController: _scrollController,
+                              ),
                             ),
                           ),
                         ],

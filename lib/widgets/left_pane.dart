@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/movie_provider.dart';
 import '../widgets/nav_items.dart';
 import '../utils/constants.dart';
 
-class LeftPane extends StatelessWidget {
+class LeftPane extends StatefulWidget {
   const LeftPane({
     required this.selected,
     required this.mainNavAction,
+    required this.onItemSelect,
     Key? key,
   }) : super(key: key);
 
   final int selected;
   final Function mainNavAction;
+  final ValueChanged<int> onItemSelect;
+
+  @override
+  State<LeftPane> createState() => _LeftPaneState();
+}
+
+class _LeftPaneState extends State<LeftPane> {
+  late int currentPage;
+  @override
+  void initState() {
+    super.initState();
+    currentPage = widget.selected;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final movieProvider = Provider.of<MovieProvider>(context);
+
     return Column(
       children: [
         Container(
@@ -37,29 +55,59 @@ class LeftPane extends StatelessWidget {
               const SizedBox(height: 20),
               mainNavItem(
                 screenWidth(context) / 75,
-                () {},
-                selected == 1,
-                'New Releases',
-                Icons.rocket_launch_outlined,
+                () {
+                  setState(() {
+                    widget.onItemSelect(currentPage);
+                    currentPage = 1;
+                    movieProvider.page = 1;
+                    movieProvider.movieResults.clear();
+                    movieProvider.getNowPlayingMovies(true);
+                  });
+                },
+                widget.selected == 1,
+                'Now Playing',
+                Icons.play_circle_fill_outlined,
               ),
               mainNavItem(
                 screenWidth(context) / 75,
-                () {},
-                selected == 2,
+                () {
+                  setState(() {
+                    widget.onItemSelect(currentPage);
+                    currentPage = 2;
+                    movieProvider.page = 1;
+                    movieProvider.movieResults.clear();
+                    movieProvider.getPopularMovies(true);
+                  });
+                },
+                widget.selected == 2,
                 'Most Popular',
                 Icons.emoji_events_outlined,
               ),
               mainNavItem(
                 screenWidth(context) / 75,
-                () {},
-                selected == 3,
+                () {
+                  setState(() {
+                    widget.onItemSelect(currentPage);
+                    currentPage = 3;
+                    movieProvider.page = 1;
+                  });
+                },
+                widget.selected == 3,
                 'Recommended',
                 Icons.verified_outlined,
               ),
               mainNavItem(
                 screenWidth(context) / 75,
-                () {},
-                selected == 4,
+                () {
+                  setState(() {
+                    widget.onItemSelect(currentPage);
+                    currentPage = 4;
+                    movieProvider.page = 1;
+                    movieProvider.movieResults.clear();
+                    movieProvider.getTopRatedMovies(true);
+                  });
+                },
+                widget.selected == 4,
                 'Top Chart',
                 Icons.diamond_outlined,
               )
