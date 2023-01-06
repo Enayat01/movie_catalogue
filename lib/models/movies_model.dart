@@ -4,6 +4,7 @@ part 'movies_model.g.dart';
 
 @JsonSerializable()
 class MoviesModel {
+  final Dates? dates;
   final int? page;
   final List<MovieResults>? results;
   @JsonKey(name: 'total_pages')
@@ -17,6 +18,7 @@ class MoviesModel {
   final String? statusCode;
 
   MoviesModel({
+    this.dates,
     this.page,
     this.results,
     this.totalPages,
@@ -30,6 +32,21 @@ class MoviesModel {
       _$MoviesModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$MoviesModelToJson(this);
+}
+
+@JsonSerializable()
+class Dates {
+  Dates({
+    this.maximum,
+    this.minimum,
+  });
+
+  String? maximum;
+  String? minimum;
+
+  factory Dates.fromJson(Map<String, dynamic> json) => _$DatesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DatesToJson(this);
 }
 
 @JsonSerializable()

@@ -89,7 +89,33 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/movie/now_playing?api_key=${apiKey}&page=${page}',
+              '/movie/top_rated?api_key=${apiKey}&page=${page}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = MoviesModel.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<MoviesModel> getUpcomingMovies(
+    apiKey,
+    page,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<MoviesModel>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/movie/upcoming?api_key=${apiKey}&page=${page}',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -103,12 +129,14 @@ class _ApiClient implements ApiClient {
     apiKey,
     searchQuery,
     includeAdult,
+    page,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'api_key': apiKey,
       r'query': searchQuery,
       r'include_adult': includeAdult,
+      r'page': page,
     };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};

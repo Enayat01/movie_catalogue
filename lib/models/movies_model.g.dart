@@ -7,6 +7,9 @@ part of 'movies_model.dart';
 // **************************************************************************
 
 MoviesModel _$MoviesModelFromJson(Map<String, dynamic> json) => MoviesModel(
+      dates: json['dates'] == null
+          ? null
+          : Dates.fromJson(json['dates'] as Map<String, dynamic>),
       page: json['page'] as int?,
       results: (json['results'] as List<dynamic>?)
           ?.map((e) => MovieResults.fromJson(e as Map<String, dynamic>))
@@ -20,6 +23,7 @@ MoviesModel _$MoviesModelFromJson(Map<String, dynamic> json) => MoviesModel(
 
 Map<String, dynamic> _$MoviesModelToJson(MoviesModel instance) =>
     <String, dynamic>{
+      'dates': instance.dates,
       'page': instance.page,
       'results': instance.results,
       'total_pages': instance.totalPages,
@@ -27,6 +31,16 @@ Map<String, dynamic> _$MoviesModelToJson(MoviesModel instance) =>
       'status_message': instance.statusMessage,
       'success': instance.success,
       'status_code': instance.statusCode,
+    };
+
+Dates _$DatesFromJson(Map<String, dynamic> json) => Dates(
+      maximum: json['maximum'] as String?,
+      minimum: json['minimum'] as String?,
+    );
+
+Map<String, dynamic> _$DatesToJson(Dates instance) => <String, dynamic>{
+      'maximum': instance.maximum,
+      'minimum': instance.minimum,
     };
 
 MovieResults _$MovieResultsFromJson(Map<String, dynamic> json) => MovieResults(

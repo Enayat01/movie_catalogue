@@ -2,6 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:movie_catalogue/models/movies_model.dart';
+import 'package:movie_catalogue/pages/most_popular_page.dart';
+import 'package:movie_catalogue/pages/now_playing_page.dart';
+import 'package:movie_catalogue/pages/search_page.dart';
+import 'package:movie_catalogue/pages/top_chart_page.dart';
+import 'package:movie_catalogue/pages/upcoming_page.dart';
 import 'package:movie_catalogue/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
@@ -21,15 +26,50 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  int _currentPage = 2;
+  int _currentPage = 1;
   final _scrollController = ScrollController();
+  final _textEditingController = TextEditingController();
   List<MovieResults>? movieResults;
+  List screen = [];
 
   @override
   void initState() {
     super.initState();
     final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+    movieProvider.getNowPlayingMovies(true);
     movieProvider.getPopularMovies(true);
+    movieProvider.getUpcomingMovies(true);
+    movieProvider.getTopRatedMovies(true);
+
+    screen = [
+      NowPlayingPage(
+        movieData: movieProvider.nowPlayingMovieResults,
+        scrollController: _scrollController,
+      ),
+      MostPopularPage(
+        movieData: movieProvider.popularMovieResults,
+        scrollController: _scrollController,
+      ),
+      UpcomingPage(
+        movieData: movieProvider.upcomingMovieResults,
+        scrollController: _scrollController,
+      ),
+      TopChartPage(
+        movieData: movieProvider.topRatedMovieResults,
+        scrollController: _scrollController,
+      ),
+      SearchPage(
+        movieData: movieProvider.searchMovieResults,
+        scrollController: _scrollController,
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,9 +81,22 @@ class _AppLayoutState extends State<AppLayout> {
           !movieProvider.isLoading) {
         if (movieProvider.page != movieProvider.moviesModel?.totalPages) {
           setState(() {
-            ++movieProvider.page;
+            movieProvider.page++;
           });
-          movieProvider.getPopularMovies(false);
+          if (_currentPage == 0) {
+            movieProvider.getNowPlayingMovies(false);
+          } else if (_currentPage == 1) {
+            movieProvider.getPopularMovies(false);
+          } else if (_currentPage == 2) {
+            movieProvider.getUpcomingMovies(false);
+          } else if (_currentPage == 3) {
+            movieProvider.getTopRatedMovies(false);
+          } else if (_currentPage == 4) {
+            movieProvider.searchMovie(
+              false,
+              _textEditingController.text,
+            );
+          }
         }
       }
     });
@@ -53,7 +106,7 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
-    final movieData = movieProvider.movieResults;
+    final movieData = movieProvider.popularMovieResults;
 
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
@@ -79,11 +132,8 @@ class _AppLayoutState extends State<AppLayout> {
               backgroundColor: Colors.indigo.withOpacity(0.80),
               child: LeftPane(
                 selected: _currentPage,
-                mainNavAction: () {},
                 onItemSelect: (value) {
-                  setState(() {
-                    _currentPage = value;
-                  });
+                  _currentPage = value;
                 },
               ),
             )
@@ -116,8 +166,9 @@ class _AppLayoutState extends State<AppLayout> {
                       color: Colors.indigo.withOpacity(0.95),
                       child: LeftPane(
                         selected: _currentPage,
-                        mainNavAction: () {},
-                        onItemSelect: (value) => _currentPage = value,
+                        onItemSelect: (value) {
+                          _currentPage = value;
+                        },
                       ),
                     ),
 
@@ -131,7 +182,15 @@ class _AppLayoutState extends State<AppLayout> {
                             color: Colors.indigo.withOpacity(0.80),
                             child: Row(
                               children: [
-                                searchBar(),
+                                searchBar(_textEditingController, (value) {
+                                  setState(() {
+                                    _currentPage = 4;
+                                    movieProvider.page = 1;
+                                    _textEditingController.text = value;
+                                  });
+                                  movieProvider.searchMovieResults.clear();
+                                  movieProvider.searchMovie(true, value);
+                                }),
                                 profileSection(),
                               ],
                             ),
@@ -151,10 +210,9 @@ class _AppLayoutState extends State<AppLayout> {
                           /// Main Pane section
                           Expanded(
                             child: Center(
-                              child: MainPane(
-                                movieData: movieData,
-                                scrollController: _scrollController,
-                              ),
+                              child: movieProvider.isLoading
+                                  ? const CircularProgressIndicator()
+                                  : screen[_currentPage],
                             ),
                           ),
                         ],

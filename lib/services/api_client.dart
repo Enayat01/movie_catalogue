@@ -21,8 +21,14 @@ abstract class ApiClient {
     @Path('page') int page,
   );
 
-  @GET('/movie/now_playing?api_key={apiKey}&page={page}')
+  @GET('/movie/top_rated?api_key={apiKey}&page={page}')
   Future<MoviesModel> getTopRatedMovies(
+    @Path('apiKey') String apiKey,
+    @Path('page') int page,
+  );
+
+  @GET('/movie/upcoming?api_key={apiKey}&page={page}')
+  Future<MoviesModel> getUpcomingMovies(
     @Path('apiKey') String apiKey,
     @Path('page') int page,
   );
@@ -32,5 +38,6 @@ abstract class ApiClient {
     @Query('api_key') String apiKey,
     @Query('query') String searchQuery,
     @Query('include_adult') bool includeAdult,
+    @Query('page') int page,
   );
 }

@@ -7,13 +7,11 @@ import '../utils/constants.dart';
 class LeftPane extends StatefulWidget {
   const LeftPane({
     required this.selected,
-    required this.mainNavAction,
     required this.onItemSelect,
     Key? key,
   }) : super(key: key);
 
   final int selected;
-  final Function mainNavAction;
   final ValueChanged<int> onItemSelect;
 
   @override
@@ -30,7 +28,7 @@ class _LeftPaneState extends State<LeftPane> {
 
   @override
   Widget build(BuildContext context) {
-    final movieProvider = Provider.of<MovieProvider>(context);
+    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
 
     return Column(
       children: [
@@ -57,14 +55,14 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 75,
                 () {
                   setState(() {
+                    currentPage = 0;
                     widget.onItemSelect(currentPage);
-                    currentPage = 1;
                     movieProvider.page = 1;
-                    movieProvider.movieResults.clear();
+                    movieProvider.nowPlayingMovieResults.clear();
                     movieProvider.getNowPlayingMovies(true);
                   });
                 },
-                widget.selected == 1,
+                currentPage == 0,
                 'Now Playing',
                 Icons.play_circle_fill_outlined,
               ),
@@ -72,14 +70,14 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 75,
                 () {
                   setState(() {
+                    currentPage = 1;
                     widget.onItemSelect(currentPage);
-                    currentPage = 2;
                     movieProvider.page = 1;
-                    movieProvider.movieResults.clear();
+                    movieProvider.popularMovieResults.clear();
                     movieProvider.getPopularMovies(true);
                   });
                 },
-                widget.selected == 2,
+                currentPage == 1,
                 'Most Popular',
                 Icons.emoji_events_outlined,
               ),
@@ -87,27 +85,28 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 75,
                 () {
                   setState(() {
+                    currentPage = 2;
                     widget.onItemSelect(currentPage);
-                    currentPage = 3;
-                    movieProvider.page = 1;
+                    movieProvider.upcomingMovieResults.clear();
+                    movieProvider.getUpcomingMovies(true);
                   });
                 },
-                widget.selected == 3,
-                'Recommended',
-                Icons.verified_outlined,
+                currentPage == 2,
+                'Up Coming',
+                Icons.new_releases_outlined,
               ),
               mainNavItem(
                 screenWidth(context) / 75,
                 () {
                   setState(() {
+                    currentPage = 3;
                     widget.onItemSelect(currentPage);
-                    currentPage = 4;
                     movieProvider.page = 1;
-                    movieProvider.movieResults.clear();
+                    movieProvider.topRatedMovieResults.clear();
                     movieProvider.getTopRatedMovies(true);
                   });
                 },
-                widget.selected == 4,
+                currentPage == 3,
                 'Top Chart',
                 Icons.diamond_outlined,
               )

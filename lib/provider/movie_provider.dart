@@ -6,7 +6,11 @@ import '../services/api_client.dart';
 
 class MovieProvider with ChangeNotifier {
   MoviesModel? moviesModel;
-  List<MovieResults> movieResults = [];
+  List<MovieResults> nowPlayingMovieResults = [];
+  List<MovieResults> popularMovieResults = [];
+  List<MovieResults> upcomingMovieResults = [];
+  List<MovieResults> topRatedMovieResults = [];
+  List<MovieResults> searchMovieResults = [];
   final client = ApiClient(dioProvider());
   bool isLoading = false;
   bool loadMore = false;
@@ -15,10 +19,10 @@ class MovieProvider with ChangeNotifier {
   getPopularMovies(bool loading) {
     isLoading = loading;
     loadMore = true;
-    client.getPopularMovies(apiKey,page).then((value) {
+    client.getPopularMovies(apiKey, page).then((value) {
       moviesModel = value;
       value.results?.forEach((element) {
-        movieResults.add(element);
+        popularMovieResults.add(element);
       });
       isLoading = false;
       notifyListeners();
@@ -35,7 +39,7 @@ class MovieProvider with ChangeNotifier {
     client.getTopRatedMovies(apiKey, page).then((value) {
       moviesModel = value;
       value.results?.forEach((element) {
-        movieResults.add(element);
+        topRatedMovieResults.add(element);
       });
       isLoading = false;
       loadMore = false;
@@ -53,6 +57,28 @@ class MovieProvider with ChangeNotifier {
     loadMore = true;
     client.getNowPlayingMovies(apiKey, page).then((value) {
       moviesModel = value;
+      value.results?.forEach((element) {
+        nowPlayingMovieResults.add(element);
+      });
+      isLoading = false;
+      loadMore = false;
+      notifyListeners();
+    }).catchError((e) {
+      isLoading = false;
+      loadMore = false;
+      debugPrint(e);
+      notifyListeners();
+    });
+  }
+
+  getUpcomingMovies(bool loading) {
+    isLoading = loading;
+    loadMore = true;
+    client.getUpcomingMovies(apiKey, page).then((value) {
+      moviesModel = value;
+      value.results?.forEach((element) {
+        upcomingMovieResults.add(element);
+      });
       isLoading = false;
       loadMore = false;
       notifyListeners();
@@ -72,9 +98,13 @@ class MovieProvider with ChangeNotifier {
       apiKey,
       searchQuery,
       false,
+      page,
     )
         .then((value) {
       moviesModel = value;
+      value.results?.forEach((element) {
+        searchMovieResults.add(element);
+      });
       isLoading = false;
       loadMore = false;
       notifyListeners();
