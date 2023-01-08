@@ -211,7 +211,9 @@ class _AppLayoutState extends State<AppLayout> {
                           Expanded(
                             child: Center(
                               child: movieProvider.isLoading
-                                  ? const CircularProgressIndicator()
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.indigo,
+                                    )
                                   : screen[_currentPage],
                             ),
                           ),
