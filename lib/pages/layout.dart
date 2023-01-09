@@ -11,7 +11,6 @@ import 'package:movie_catalogue/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/movie_provider.dart';
-import '../widgets/main_pane.dart';
 import '../widgets/sort_control.dart';
 import '../widgets/profile_section.dart';
 import '../widgets/search_bar.dart';
@@ -26,7 +25,7 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  int _currentPage = 1;
+  int _currentPage = 0;
   final _scrollController = ScrollController();
   final _textEditingController = TextEditingController();
   List<MovieResults>? movieResults;
@@ -74,7 +73,7 @@ class _AppLayoutState extends State<AppLayout> {
 
   @override
   void didChangeDependencies() {
-    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+    final movieProvider = Provider.of<MovieProvider>(context);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent &&
@@ -106,7 +105,6 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
-    final movieData = movieProvider.popularMovieResults;
 
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
@@ -153,9 +151,12 @@ class _AppLayoutState extends State<AppLayout> {
 
           /// Main parent row
           child: ResponsiveWidget.isSmallScreen(context)
-              ? MainPane(
-                  movieData: movieData,
-                  scrollController: _scrollController,
+              ? Center(
+                  child: movieProvider.isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.indigo,
+                        )
+                      : screen[_currentPage],
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
