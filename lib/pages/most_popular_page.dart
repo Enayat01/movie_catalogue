@@ -3,7 +3,7 @@ import '../widgets/main_pane.dart';
 
 import '../models/movies_model.dart';
 
-class MostPopularPage extends StatelessWidget {
+class MostPopularPage extends StatefulWidget {
   final List<MovieResults>? movieData;
   final ScrollController scrollController;
   const MostPopularPage({
@@ -13,10 +13,15 @@ class MostPopularPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<MostPopularPage> createState() => _MostPopularPageState();
+}
+
+class _MostPopularPageState extends State<MostPopularPage> {
+  @override
   Widget build(BuildContext context) {
     return MainPane(
-      movieData: movieData,
-      scrollController: scrollController,
+      movieData: widget.movieData,
+      scrollController: widget.scrollController,
     );
   }
 }
