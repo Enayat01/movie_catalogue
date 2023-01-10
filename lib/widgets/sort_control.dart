@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 
-Widget sortControl(BuildContext context) {
+Widget sortControl(
+    BuildContext context, VoidCallback onListPressed, onGridPressed) {
   return Flexible(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        /// Sort button row
         Row(
           children: [
             SizedBox(width: screenWidth(context) / 20),
@@ -40,20 +42,28 @@ Widget sortControl(BuildContext context) {
             ),
           ],
         ),
+
+        /// View control buttons row
         Row(
           children: [
-            const Icon(
-              Icons.view_list,
-              size: 35,
-              color: Colors.white,
+            IconButton(
+              onPressed: onListPressed,
+              icon: const Icon(
+                Icons.view_list,
+                size: 35,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(
               width: 20,
             ),
-            const Icon(
-              Icons.view_module,
-              size: 35,
-              color: Colors.white,
+            IconButton(
+              onPressed: onGridPressed,
+              icon: const Icon(
+                Icons.view_module,
+                size: 35,
+                color: Colors.white,
+              ),
             ),
             SizedBox(width: screenWidth(context) / 20),
           ],

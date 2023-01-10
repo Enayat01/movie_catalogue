@@ -110,7 +110,9 @@ class _AppSearchPageState extends State<AppSearchPage> {
                       )
                     : SearchPage(
                         movieData: movieProvider.searchMovieResults,
-                        scrollController: _scrollController),
+                        scrollController: _scrollController,
+                        isGridview: true,
+                      ),
           ),
         ),
       ),

@@ -31,11 +31,14 @@ class _AppLayoutState extends State<AppLayout> {
   final _scrollController = ScrollController();
   final _textEditingController = TextEditingController();
   List screen = [];
+  bool _isGridView = true;
 
   @override
   void initState() {
     super.initState();
+
     final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+
     movieProvider.getNowPlayingMovies(true);
     movieProvider.getPopularMovies(true);
     movieProvider.getUpcomingMovies(true);
@@ -45,36 +48,35 @@ class _AppLayoutState extends State<AppLayout> {
       NowPlayingPage(
         movieData: movieProvider.nowPlayingMovieResults,
         scrollController: _scrollController,
+        isGridview: _isGridView,
       ),
       MostPopularPage(
         movieData: movieProvider.popularMovieResults,
         scrollController: _scrollController,
+        isGridview: _isGridView,
       ),
       UpcomingPage(
         movieData: movieProvider.upcomingMovieResults,
         scrollController: _scrollController,
+        isGridview: _isGridView,
       ),
       TopChartPage(
         movieData: movieProvider.topRatedMovieResults,
         scrollController: _scrollController,
+        isGridview: _isGridView,
       ),
       SearchPage(
         movieData: movieProvider.searchMovieResults,
         scrollController: _scrollController,
+        isGridview: _isGridView,
       )
     ];
   }
 
   @override
-  void dispose() {
-    _scrollController.dispose();
-    _textEditingController.dispose();
-    super.dispose();
-  }
-
-  @override
   void didChangeDependencies() {
-    final movieProvider = Provider.of<MovieProvider>(context);
+    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent &&
@@ -104,14 +106,73 @@ class _AppLayoutState extends State<AppLayout> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
+    screen = [
+      NowPlayingPage(
+        movieData: movieProvider.nowPlayingMovieResults,
+        scrollController: _scrollController,
+        isGridview: _isGridView,
+      ),
+      MostPopularPage(
+        movieData: movieProvider.popularMovieResults,
+        scrollController: _scrollController,
+        isGridview: _isGridView,
+      ),
+      UpcomingPage(
+        movieData: movieProvider.upcomingMovieResults,
+        scrollController: _scrollController,
+        isGridview: _isGridView,
+      ),
+      TopChartPage(
+        movieData: movieProvider.topRatedMovieResults,
+        scrollController: _scrollController,
+        isGridview: _isGridView,
+      ),
+      SearchPage(
+        movieData: movieProvider.searchMovieResults,
+        scrollController: _scrollController,
+        isGridview: _isGridView,
+      )
+    ];
 
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
           ? AppBar(
               backgroundColor: Colors.indigo.withOpacity(0.80),
               actions: [
+                IconButton(
+                  onPressed: () {
+                    _isGridView = false;
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.view_list,
+                    size: 35,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _isGridView = true;
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.view_module,
+                    size: 35,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
                 TextButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -210,7 +271,15 @@ class _AppLayoutState extends State<AppLayout> {
                             color: Colors.deepPurple.withOpacity(0.60),
                             child: Row(
                               children: [
-                                sortControl(context),
+                                sortControl(context, () {
+                                  _isGridView = false;
+                                  print(_isGridView);
+                                  setState(() {});
+                                }, () {
+                                  _isGridView = true;
+                                  print(_isGridView);
+                                  setState(() {});
+                                }),
                               ],
                             ),
                           ),

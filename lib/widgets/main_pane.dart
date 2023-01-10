@@ -4,26 +4,22 @@ import 'package:movie_catalogue/utils/responsive.dart';
 
 import '../data.dart';
 
-class MainPane extends StatefulWidget {
+class MainPane extends StatelessWidget {
   final List<MovieResults>? movieData;
   final ScrollController scrollController;
+  final bool isGridview;
 
   const MainPane({
     required this.movieData,
     required this.scrollController,
+    required this.isGridview,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<MainPane> createState() => _MainPaneState();
-}
-
-class _MainPaneState extends State<MainPane> {
-  @override
   Widget build(BuildContext context) {
-    List<bool> isHovering =
-        List.generate(widget.movieData!.length, (index) => false);
-    return widget.movieData == null || widget.movieData!.isEmpty
+    List<bool> isHovering = List.generate(movieData!.length, (index) => false);
+    return movieData == null || movieData!.isEmpty
         ? const Center(
             child: Text(
               'No movies found',
@@ -33,125 +29,287 @@ class _MainPaneState extends State<MainPane> {
               ),
             ),
           )
-        : GridView.builder(
-            controller: widget.scrollController,
-            padding: ResponsiveWidget.isSmallScreen(context)
-                ? const EdgeInsets.all(20)
-                : const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-            itemCount: widget.movieData?.length,
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                crossAxisSpacing: ResponsiveWidget.isSmallScreen(context)
-                    ? 20
-                    : 50, //column gap
-                mainAxisSpacing: 20, //row gap
-                maxCrossAxisExtent: 300,
-                childAspectRatio: 3.2 / 5),
-            itemBuilder: (BuildContext context, int index) {
-              return InkWell(
-                onTap: () {},
-                onHover: (value) {
-                  setState(() {
-                    isHovering[index] = value;
-                  });
-                },
-                child: Column(children: [
-                  Flexible(
-                    flex: 1,
-                    fit: FlexFit.loose,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: GridTile(
-                        footer: Container(
-                          alignment: Alignment.centerRight,
-                          margin: const EdgeInsets.all(12),
+        : isGridview
+            ? GridView.builder(
+                controller: scrollController,
+                padding: ResponsiveWidget.isSmallScreen(context)
+                    ? const EdgeInsets.all(20)
+                    : const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+                itemCount: movieData?.length,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  crossAxisSpacing: ResponsiveWidget.isSmallScreen(context)
+                      ? 20
+                      : 50, //column gap
+                  mainAxisSpacing: 20, //row gap
+                  maxCrossAxisExtent: 300,
+                  childAspectRatio: 3.2 / 5,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {},
+                    onHover: (value) {
+                      isHovering[index] = value;
+                    },
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.loose,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 3),
-                              color: Colors.yellowAccent,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    size: 15,
+                            borderRadius: BorderRadius.circular(12),
+                            child: GridTile(
+                              footer: Container(
+                                alignment: Alignment.centerRight,
+                                margin: const EdgeInsets.all(12),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                    horizontal: 3,
                                   ),
-                                  Text(
-                                    "${widget.movieData?[index].voteAverage}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                        color: Colors.black),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.yellowAccent,
                                   ),
-                                ],
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.star,
+                                        size: 15,
+                                      ),
+                                      Text(
+                                        "${movieData?[index].voteAverage}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
+                              child: movieData?[index].posterPath == null
+                                  ? Container(
+                                      color: isHovering[index]
+                                          ? Colors.white70
+                                          : Colors.indigo.withOpacity(0.5),
+                                      height: double.infinity,
+                                      width: double.infinity,
+                                      child: const Center(
+                                        child: Text(
+                                          'Image not available',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Image.network(
+                                      pImageBase + movieData?[index].posterPath,
+                                      fit: BoxFit.fill,
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                                : null,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      },
+                                    ),
                             ),
                           ),
                         ),
-                        child: widget.movieData?[index].posterPath == null
-                            ? Container(
-                                color: isHovering[index]
-                                    ? Colors.white70
-                                    : Colors.indigo.withOpacity(0.5),
-                                height: double.infinity,
-                                width: double.infinity,
-                                child: const Center(
-                                  child: Text(
-                                    'Image not available',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                    ),
-                                  ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                movieData?[index].title ?? '',
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
                                 ),
-                              )
-                            : Image.network(
-                                pImageBase +
-                                    widget.movieData?[index].posterPath,
-                                fit: BoxFit.fill,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                },
                               ),
+                              Text(
+                                getGenre(movieData![index].genreIds!),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white60,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                })
+            : ListView.builder(
+                controller: scrollController,
+                padding: ResponsiveWidget.isSmallScreen(context)
+                    ? const EdgeInsets.all(20)
+                    : const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+                itemCount: movieData?.length,
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: 250,
+                    width: double.infinity,
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: const EdgeInsets.all(10),
+                      color: Colors.indigo.withOpacity(0.4),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: movieData?[index].posterPath == null
+                                    ? Container(
+                                        width: 140,
+                                        color: isHovering[index]
+                                            ? Colors.white70
+                                            : Colors.white54,
+                                        child: const Center(
+                                          child: Text(
+                                            'Image not available',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        child: Image.network(
+                                          pImageBase +
+                                              movieData?[index].posterPath,
+                                          fit: BoxFit.fill,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress
+                                                            .expectedTotalBytes !=
+                                                        null
+                                                    ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                    : null,
+                                                color: Colors.white,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ),
+
+                            ///Text column
+                            Flexible(
+                              flex: 2,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      movieData?[index].title ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5),
+                                        child: Text(
+                                          movieData?[index].overview ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      getGenre(movieData![index].genreIds!),
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white60,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                  horizontal: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.yellowAccent,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                      size: 15,
+                                    ),
+                                    Text(
+                                      "${movieData?[index].voteAverage}",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.movieData?[index].title ?? '',
-                            style: const TextStyle(
-                                fontSize: 17, color: Colors.white),
-                          ),
-                          Text(
-                            getGenre(widget.movieData![index].genreIds!),
-                            style: const TextStyle(
-                                fontSize: 15, color: Colors.white60),
-                          ),
-                        ],
-                      )),
-                ]),
+                  );
+                },
               );
-            });
   }
 
   String getGenre(List<int> gIndex) {
