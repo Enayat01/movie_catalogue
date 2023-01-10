@@ -3,7 +3,7 @@ import 'package:movie_catalogue/widgets/main_pane.dart';
 
 import '../models/movies_model.dart';
 
-class UpcomingPage extends StatelessWidget {
+class UpcomingPage extends StatefulWidget {
   final List<MovieResults>? movieData;
   final ScrollController scrollController;
   const UpcomingPage({
@@ -13,10 +13,15 @@ class UpcomingPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<UpcomingPage> createState() => _UpcomingPageState();
+}
+
+class _UpcomingPageState extends State<UpcomingPage> {
+  @override
   Widget build(BuildContext context) {
     return MainPane(
-      movieData: movieData,
-      scrollController: scrollController,
+      movieData: widget.movieData,
+      scrollController: widget.scrollController,
     );
   }
 }

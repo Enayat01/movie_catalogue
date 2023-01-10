@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 Widget searchBar(TextEditingController textEditingController,
-    Function(String)? onSubmitted) {
+    Function(String)? onChanged) {
   return Flexible(
     child: TextField(
-      onSubmitted: onSubmitted,
+      onChanged: onChanged,
       controller: textEditingController,
       decoration: const InputDecoration(
         prefixIcon: Padding(

@@ -1,22 +1,23 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:movie_catalogue/models/movies_model.dart';
-import 'package:movie_catalogue/pages/most_popular_page.dart';
-import 'package:movie_catalogue/pages/now_playing_page.dart';
-import 'package:movie_catalogue/pages/search_page.dart';
-import 'package:movie_catalogue/pages/top_chart_page.dart';
-import 'package:movie_catalogue/pages/upcoming_page.dart';
-import 'package:movie_catalogue/utils/responsive.dart';
 import 'package:provider/provider.dart';
+import '../pages/most_popular_page.dart';
+import '../pages/now_playing_page.dart';
+import '../pages/search_page.dart';
+import '../pages/top_chart_page.dart';
+import '../pages/upcoming_page.dart';
+import '../pages/app_search_page.dart';
 
 import '../provider/movie_provider.dart';
-import '../widgets/main_pane.dart';
+
 import '../widgets/sort_control.dart';
 import '../widgets/profile_section.dart';
 import '../widgets/search_bar.dart';
-import '../utils/constants.dart';
 import '../widgets/left_pane.dart';
+
+import '../utils/responsive.dart';
+import '../utils/constants.dart';
 
 class AppLayout extends StatefulWidget {
   const AppLayout({Key? key}) : super(key: key);
@@ -26,10 +27,9 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  int _currentPage = 1;
+  int _currentPage = 0;
   final _scrollController = ScrollController();
   final _textEditingController = TextEditingController();
-  List<MovieResults>? movieResults;
   List screen = [];
 
   @override
@@ -74,7 +74,7 @@ class _AppLayoutState extends State<AppLayout> {
 
   @override
   void didChangeDependencies() {
-    final movieProvider = Provider.of<MovieProvider>(context, listen: false);
+    final movieProvider = Provider.of<MovieProvider>(context);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent &&
@@ -106,7 +106,6 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     final movieProvider = Provider.of<MovieProvider>(context);
-    final movieData = movieProvider.popularMovieResults;
 
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
@@ -114,7 +113,14 @@ class _AppLayoutState extends State<AppLayout> {
               backgroundColor: Colors.indigo.withOpacity(0.80),
               actions: [
                 TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AppSearchPage(),
+                      ),
+                    );
+                  },
                   icon: const Icon(
                     Icons.search,
                     color: Colors.white,
@@ -153,9 +159,12 @@ class _AppLayoutState extends State<AppLayout> {
 
           /// Main parent row
           child: ResponsiveWidget.isSmallScreen(context)
-              ? MainPane(
-                  movieData: movieData,
-                  scrollController: _scrollController,
+              ? Center(
+                  child: movieProvider.isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.indigo,
+                        )
+                      : screen[_currentPage],
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -186,7 +195,6 @@ class _AppLayoutState extends State<AppLayout> {
                                   setState(() {
                                     _currentPage = 4;
                                     movieProvider.page = 1;
-                                    _textEditingController.text = value;
                                   });
                                   movieProvider.searchMovieResults.clear();
                                   movieProvider.searchMovie(true, value);
@@ -211,7 +219,9 @@ class _AppLayoutState extends State<AppLayout> {
                           Expanded(
                             child: Center(
                               child: movieProvider.isLoading
-                                  ? const CircularProgressIndicator()
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.indigo,
+                                    )
                                   : screen[_currentPage],
                             ),
                           ),

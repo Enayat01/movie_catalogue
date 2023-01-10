@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'The Movie Catalogue',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.indigo,
         ),
         home: const AppLayout(),
         debugShowCheckedModeBanner: false,
