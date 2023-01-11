@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:movie_catalogue/models/movie_detail_model.dart';
 import '../models/movies_model.dart';
 import 'package:retrofit/http.dart';
 
@@ -39,5 +40,11 @@ abstract class ApiClient {
     @Query('query') String searchQuery,
     @Query('include_adult') bool includeAdult,
     @Query('page') int page,
+  );
+
+  @GET('/movie/{movieId}')
+  Future<MovieDetailModel> getMovieDetails(
+    @Query('api_key') String apiKey,
+    @Path('movieId') String movieId,
   );
 }

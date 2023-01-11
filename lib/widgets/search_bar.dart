@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-Widget searchBar(TextEditingController textEditingController,
-    Function(String)? onChanged) {
+Widget searchBar(
+    TextEditingController textEditingController, Function(String)? onChanged) {
   return Flexible(
     child: TextField(
       onChanged: onChanged,

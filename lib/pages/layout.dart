@@ -155,8 +155,6 @@ class _AppLayoutState extends State<AppLayout> {
                   },
                   icon: const Icon(
                     Icons.view_list,
-                    size: 35,
-                    color: Colors.white,
                   ),
                 ),
                 IconButton(
@@ -166,29 +164,34 @@ class _AppLayoutState extends State<AppLayout> {
                   },
                   icon: const Icon(
                     Icons.view_module,
-                    size: 35,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(
                   width: 5,
                 ),
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AppSearchPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Search',
-                    style: TextStyle(color: Colors.white),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white54)),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AppSearchPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Search',
+                      style: TextStyle(color: Colors.white60),
+                    ),
                   ),
                 ),
               ],
@@ -217,16 +220,20 @@ class _AppLayoutState extends State<AppLayout> {
         /// Using Backdrop filter to blur the image
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-
-          /// Main parent row
           child: ResponsiveWidget.isSmallScreen(context)
+
+              ///showing loading indicator
               ? Center(
                   child: movieProvider.isLoading
                       ? const CircularProgressIndicator(
                           color: Colors.indigo,
                         )
+
+                      /// Showing only main pane for mobile view
                       : screen[_currentPage],
                 )
+
+              /// Main parent row
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -269,18 +276,16 @@ class _AppLayoutState extends State<AppLayout> {
                           Container(
                             height: screenHeight(context) * 0.15,
                             color: Colors.deepPurple.withOpacity(0.60),
-                            child: Row(
-                              children: [
-                                sortControl(context, () {
-                                  _isGridView = false;
-                                  print(_isGridView);
-                                  setState(() {});
-                                }, () {
-                                  _isGridView = true;
-                                  print(_isGridView);
-                                  setState(() {});
-                                }),
-                              ],
+                            child: sortControl(
+                              context,
+                              () {
+                                _isGridView = false;
+                                setState(() {});
+                              },
+                              () {
+                                _isGridView = true;
+                                setState(() {});
+                              },
                             ),
                           ),
 
