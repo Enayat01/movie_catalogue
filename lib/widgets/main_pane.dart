@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:movie_catalogue/models/movies_model.dart';
-import 'package:movie_catalogue/utils/responsive.dart';
-
 import '../data.dart';
+import '../models/movies_model.dart';
+import '../pages/details_page.dart';
+import '../utils/constants.dart';
+import '../utils/responsive.dart';
+
 
 class MainPane extends StatelessWidget {
   final List<MovieResults>? movieData;
@@ -19,6 +21,7 @@ class MainPane extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<bool> isHovering = List.generate(movieData!.length, (index) => false);
+
     return movieData == null || movieData!.isEmpty
         ? const Center(
             child: Text(
@@ -29,6 +32,8 @@ class MainPane extends StatelessWidget {
               ),
             ),
           )
+
+        ///if mode is grid view
         : isGridview
             ? GridView.builder(
                 controller: scrollController,
@@ -46,7 +51,15 @@ class MainPane extends StatelessWidget {
                 ),
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MovieDetailsPage(
+                              movieId: movieData![index].id!,
+                            ),
+                          ));
+                    },
                     onHover: (value) {
                       isHovering[index] = value;
                     },
@@ -107,7 +120,7 @@ class MainPane extends StatelessWidget {
                                       ),
                                     )
                                   : Image.network(
-                                      pImageBase + movieData?[index].posterPath,
+                                      posterImageBase + movieData?[index].posterPath,
                                       fit: BoxFit.fill,
                                       loadingBuilder: (BuildContext context,
                                           Widget child,
@@ -159,6 +172,8 @@ class MainPane extends StatelessWidget {
                     ),
                   );
                 })
+
+            /// If mode is list view
             : ListView.builder(
                 controller: scrollController,
                 padding: ResponsiveWidget.isSmallScreen(context)
@@ -203,7 +218,7 @@ class MainPane extends StatelessWidget {
                                       )
                                     : SizedBox(
                                         child: Image.network(
-                                          pImageBase +
+                                          posterImageBase +
                                               movieData?[index].posterPath,
                                           fit: BoxFit.fill,
                                           loadingBuilder: (BuildContext context,

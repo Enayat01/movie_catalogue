@@ -9,7 +9,7 @@ class MovieDetailProvider with ChangeNotifier {
   final client = ApiClient(dioProvider());
   bool isLoading = false;
 
-  getMovieDetails(String movieId) {
+  getMovieDetails(int movieId) {
     isLoading = true;
     notifyListeners();
     client.getMovieDetails(apiKey, movieId).then((value) {

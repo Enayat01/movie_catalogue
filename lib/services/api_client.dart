@@ -45,6 +45,6 @@ abstract class ApiClient {
   @GET('/movie/{movieId}')
   Future<MovieDetailModel> getMovieDetails(
     @Query('api_key') String apiKey,
-    @Path('movieId') String movieId,
+    @Path('movieId') int movieId,
   );
 }
