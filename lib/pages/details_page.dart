@@ -18,6 +18,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   void initState() {
     final movieDetailProvider = context.read<MovieDetailProvider>();
     movieDetailProvider.getMovieDetails(widget.movieId);
+    movieDetailProvider.getMovieImages(widget.movieId);
     super.initState();
   }
 
@@ -25,6 +26,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   Widget build(BuildContext context) {
     final movieDetailProvider = Provider.of<MovieDetailProvider>(context);
     final movieDetails = movieDetailProvider.movieDetailModel;
+    final moviePosters = movieDetailProvider.movieImageModel?.posters;
     return Scaffold(
       body: movieDetailProvider.isLoading
           ? const Center(
@@ -38,86 +40,75 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                   ),
                 )
               : Container(
-                  ///Setting a background image for entire layout
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/bg.jpg'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  /// Using Backdrop filter to blur the image
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Flexible(
-                          child: Container(
-                            height: screenHeight(context) * 0.6,
-                            width: double.infinity,
-                            decoration: movieDetails.backdropPath != null
-                                ? BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        backdropImageBase +
-                                            movieDetails.backdropPath!,
-                                      ),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  )
-                                : const BoxDecoration(color: Colors.grey),
-                            child: Container(
-                              color: Colors.black45,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 50.0,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          '${movieDetails.title!} (${movieDetails.releaseDate!.substring(0, 4)})',
-                                          style: const TextStyle(
-                                            fontSize: 28,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(movieDetails.tagline ?? ''),
-                                      ],
-                                    ),
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: movieDetails.backdropPath != null
+                      ? BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              backdropImageBase + movieDetails.backdropPath!,
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const BoxDecoration(color: Colors.grey),
+                  child: Container(
+                    color: Colors.black54,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 50.0,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '${movieDetails.title!} (${movieDetails.releaseDate!.substring(0, 4)})',
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const Text(
-                                    'Overview',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 5.0),
+                                  child: Text(
+                                    movieDetails.tagline ?? '',
+                                    style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 100,
-                                      vertical: 10,
-                                    ),
-                                    child: Text(
-                                      movieDetails.overview ?? '',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
+                          const Text(
+                            'Overview',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 100,
+                              vertical: 10,
+                            ),
+                            child: Text(
+                              movieDetails.overview ?? '',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:movie_catalogue/models/movie_detail_model.dart';
+import '../models/movie_detail_model.dart';
+import '../models/movie_image_model.dart';
 import '../models/movies_model.dart';
 import 'package:retrofit/http.dart';
 
@@ -47,4 +48,10 @@ abstract class ApiClient {
     @Query('api_key') String apiKey,
     @Path('movieId') int movieId,
   );
+
+  @GET('/movie/{movieId}/images')
+  Future<MovieImageModel> getMovieImages(
+      @Query('api_key') String apiKey,
+      @Path('movieId') int movieId,
+      );
 }
