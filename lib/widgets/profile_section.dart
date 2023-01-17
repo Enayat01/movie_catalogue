@@ -6,7 +6,10 @@ Widget profileSection() {
     children: const [
       Text(
         personName,
-        style: TextStyle(color: Colors.white, fontSize: 18),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 18,
+        ),
       ),
       SizedBox(width: 20),
       CircleAvatar(
@@ -16,7 +19,7 @@ Widget profileSection() {
       SizedBox(width: 15),
       Icon(
         Icons.settings,
-        color: Colors.white,
+        color: iconColor,
       ),
       SizedBox(width: 40),
     ],

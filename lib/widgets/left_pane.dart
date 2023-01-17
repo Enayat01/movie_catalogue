@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/movie_provider.dart';
-import '../widgets/nav_items.dart';
 import '../utils/constants.dart';
 
 class LeftPane extends StatefulWidget {
@@ -37,10 +36,10 @@ class _LeftPaneState extends State<LeftPane> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: Colors.indigo[700],
+            color: indigo700Color,
             border: const Border(
               bottom: BorderSide(
-                color: Colors.white,
+                color: whiteColor,
                 width: 2,
               ),
             ),
@@ -63,7 +62,7 @@ class _LeftPaneState extends State<LeftPane> {
                   });
                 },
                 currentPage == 0,
-                'Now Playing',
+                nowPlayingTitle,
                 Icons.play_circle_fill_outlined,
               ),
               mainNavItem(
@@ -78,7 +77,7 @@ class _LeftPaneState extends State<LeftPane> {
                   });
                 },
                 currentPage == 1,
-                'Most Popular',
+                mostPopularTitle,
                 Icons.emoji_events_outlined,
               ),
               mainNavItem(
@@ -92,7 +91,7 @@ class _LeftPaneState extends State<LeftPane> {
                   });
                 },
                 currentPage == 2,
-                'Up Coming',
+                upcomingTitle,
                 Icons.new_releases_outlined,
               ),
               mainNavItem(
@@ -107,7 +106,7 @@ class _LeftPaneState extends State<LeftPane> {
                   });
                 },
                 currentPage == 3,
-                'Top Chart',
+                topChartTitle,
                 Icons.diamond_outlined,
               )
             ],
@@ -118,7 +117,7 @@ class _LeftPaneState extends State<LeftPane> {
           child: Column(
             children: [
               subNavItem(
-                'My Collection',
+                collectionTitle,
                 false,
                 () {},
                 Icons.stop_circle_rounded,
@@ -127,7 +126,7 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 75,
               ),
               subNavItem(
-                'Bookmark',
+                bookmarkTitle,
                 false,
                 () {},
                 null,
@@ -136,7 +135,7 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 85,
               ),
               subNavItem(
-                'History',
+                historyTitle,
                 false,
                 () {},
                 null,
@@ -145,7 +144,7 @@ class _LeftPaneState extends State<LeftPane> {
                 screenWidth(context) / 85,
               ),
               subNavItem(
-                'Subscriptions',
+                subscriptionTitle,
                 false,
                 () {},
                 null,
@@ -159,4 +158,70 @@ class _LeftPaneState extends State<LeftPane> {
       ],
     );
   }
+}
+
+Widget mainNavItem(double width, VoidCallback onPressed, bool isSelected,
+    String title, IconData icon) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: MaterialButton(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      color: isSelected ? deepPurpleTranslucent : null,
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Icon(
+            icon,
+            color: iconColor,
+            size: width,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: width,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget subNavItem(String title, bool isSelected, VoidCallback action,
+    IconData? icon1, IconData? icon2, double? textSize, double? iconSize) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    child: MaterialButton(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      color: isSelected ? deepPurpleTranslucent : null,
+      onPressed: action,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Icon(
+            icon1,
+            color: iconColor,
+            size: iconSize,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: textSize,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(width: 20),
+          Icon(
+            icon2,
+            color: iconColor,
+            size: iconSize,
+          ),
+        ],
+      ),
+    ),
+  );
 }

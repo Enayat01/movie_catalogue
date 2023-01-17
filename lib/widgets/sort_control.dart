@@ -13,7 +13,7 @@ Widget sortControl(
           const Text(
             sortBy,
             style: TextStyle(
-              color: Colors.white60,
+              color: textColorLight,
               fontSize: 18,
             ),
           ),
@@ -23,9 +23,9 @@ Widget sortControl(
           DropdownButtonHideUnderline(
             child: DropdownButton(
               style: const TextStyle(
-                color: Colors.white,
+                color: textColor,
               ),
-              iconEnabledColor: Colors.white,
+              iconEnabledColor: iconColor,
               items: [
                 DropdownMenuItem(
                   onTap: () {},
@@ -47,7 +47,7 @@ Widget sortControl(
             icon: const Icon(
               Icons.view_list,
               size: 35,
-              color: Colors.white,
+              color: iconColor,
             ),
           ),
           const SizedBox(
@@ -58,7 +58,7 @@ Widget sortControl(
             icon: const Icon(
               Icons.view_module,
               size: 35,
-              color: Colors.white,
+              color: iconColor,
             ),
           ),
           SizedBox(width: screenWidth(context) / 20),
