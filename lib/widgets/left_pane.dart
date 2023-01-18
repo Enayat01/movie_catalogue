@@ -36,7 +36,7 @@ class _LeftPaneState extends State<LeftPane> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
-            color: indigo700Color,
+            color: logoBackgroundColor,
             border: const Border(
               bottom: BorderSide(
                 color: whiteColor,
@@ -166,7 +166,7 @@ Widget mainNavItem(double width, VoidCallback onPressed, bool isSelected,
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: MaterialButton(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      color: isSelected ? deepPurpleTranslucent : null,
+      color: isSelected ? buttonSelectionColor : null,
       onPressed: onPressed,
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -196,7 +196,7 @@ Widget subNavItem(String title, bool isSelected, VoidCallback action,
     padding: const EdgeInsets.symmetric(horizontal: 10),
     child: MaterialButton(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      color: isSelected ? deepPurpleTranslucent : null,
+      color: isSelected ? buttonSelectionColor : null,
       onPressed: action,
       child: Row(
         mainAxisSize: MainAxisSize.max,

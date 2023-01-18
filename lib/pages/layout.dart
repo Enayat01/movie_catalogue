@@ -146,7 +146,7 @@ class _AppLayoutState extends State<AppLayout> {
     return Scaffold(
       appBar: ResponsiveWidget.isSmallScreen(context)
           ? AppBar(
-              backgroundColor: Colors.indigo.withOpacity(0.80),
+              backgroundColor: appBarBackground,
               actions: [
                 IconButton(
                   onPressed: () {
@@ -164,7 +164,6 @@ class _AppLayoutState extends State<AppLayout> {
                   },
                   icon: const Icon(
                     Icons.view_module,
-                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(
@@ -173,8 +172,9 @@ class _AppLayoutState extends State<AppLayout> {
                 Container(
                   margin: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white54)),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconColorLight),
+                  ),
                   child: TextButton.icon(
                     onPressed: () {
                       Navigator.push(
@@ -186,11 +186,13 @@ class _AppLayoutState extends State<AppLayout> {
                     },
                     icon: const Icon(
                       Icons.search,
-                      color: Colors.white,
+                      color: iconColorLight,
                     ),
                     label: const Text(
-                      'Search',
-                      style: TextStyle(color: Colors.white60),
+                      search,
+                      style: TextStyle(
+                        color: textColorLight,
+                      ),
                     ),
                   ),
                 ),
@@ -199,7 +201,7 @@ class _AppLayoutState extends State<AppLayout> {
           : null,
       drawer: ResponsiveWidget.isSmallScreen(context)
           ? Drawer(
-              backgroundColor: Colors.indigo.withOpacity(0.80),
+              backgroundColor: leftPaneBackground,
               child: LeftPane(
                 selected: _currentPage,
                 onItemSelect: (value) {
@@ -226,7 +228,7 @@ class _AppLayoutState extends State<AppLayout> {
               ? Center(
                   child: movieProvider.isLoading
                       ? const CircularProgressIndicator(
-                          color: Colors.indigo,
+                          color: indicatorColorDark,
                         )
 
                       /// Showing only main pane for mobile view
@@ -240,7 +242,7 @@ class _AppLayoutState extends State<AppLayout> {
                     /// Left pane column for navigation section
                     Container(
                       width: screenWidth(context) * .20,
-                      color: Colors.indigo.withOpacity(0.95),
+                      color: leftPaneBackground,
                       child: LeftPane(
                         selected: _currentPage,
                         onItemSelect: (value) {
@@ -256,7 +258,7 @@ class _AppLayoutState extends State<AppLayout> {
                           /// Header section with search and profile
                           Container(
                             height: screenHeight(context) * 0.15,
-                            color: Colors.indigo.withOpacity(0.80),
+                            color: mainHeaderBackground,
                             child: Row(
                               children: [
                                 searchBar(_textEditingController, (value) {
@@ -275,7 +277,7 @@ class _AppLayoutState extends State<AppLayout> {
                           /// Filter section
                           Container(
                             height: screenHeight(context) * 0.15,
-                            color: Colors.deepPurple.withOpacity(0.60),
+                            color: subHeaderBackground,
                             child: sortControl(
                               context,
                               () {
@@ -294,7 +296,7 @@ class _AppLayoutState extends State<AppLayout> {
                             child: Center(
                               child: movieProvider.isLoading
                                   ? const CircularProgressIndicator(
-                                      color: Colors.indigo,
+                                      color: indicatorColorDark,
                                     )
                                   : screen[_currentPage],
                             ),

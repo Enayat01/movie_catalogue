@@ -37,15 +37,21 @@ class MainPane extends StatelessWidget {
             ? GridView.builder(
                 controller: scrollController,
                 padding: ResponsiveWidget.isSmallScreen(context)
-                    ? const EdgeInsets.all(20)
-                    : const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
+                    ? EdgeInsets.symmetric(
+                        vertical: screenHeight(context) * 0.03,
+                        horizontal: screenWidth(context) * 0.08)
+                    : EdgeInsets.symmetric(
+                        horizontal: screenWidth(context) * 0.10,
+                        vertical: screenHeight(context) * 0.05,
+                      ),
                 itemCount: movieData?.length,
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   crossAxisSpacing: ResponsiveWidget.isSmallScreen(context)
                       ? 20
                       : 50, //column gap
                   mainAxisSpacing: 20, //row gap
-                  maxCrossAxisExtent: 300,
+                  maxCrossAxisExtent:
+                      ResponsiveWidget.isSmallScreen(context) ? 265 : 300,
                   childAspectRatio: 3.2 / 5,
                 ),
                 itemBuilder: (BuildContext context, int index) {
@@ -118,9 +124,11 @@ class MainPane extends StatelessWidget {
                                         ),
                                       ),
                                     )
-                                  : Image.network(
-                                      posterImageBase +
-                                          movieData?[index].posterPath,
+                                  : Image(
+                                      image: NetworkImage(
+                                        posterImageBase +
+                                            movieData?[index].posterPath,
+                                      ),
                                       fit: BoxFit.fill,
                                       loadingBuilder: (BuildContext context,
                                           Widget child,
