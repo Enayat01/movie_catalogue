@@ -39,6 +39,7 @@ const apiKey = 'afbe66a0ded12ebd4f701d19a2209ee8';
 const String posterImageBase = "https://image.tmdb.org/t/p/w342";
 const String posterImageBaseHigh = "https://image.tmdb.org/t/p/original";
 const String backdropImageBase = "https://image.tmdb.org/t/p/w780";
+const String logoImageBase = "https://image.tmdb.org/t/p/w300";
 
 const personName = 'Jon De Marve';
 const sortBy = 'Sort by';

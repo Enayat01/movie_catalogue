@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:flutter/material.dart';
 import '../models/movie_image_model.dart';
 import '../utils/responsive.dart';
@@ -18,11 +19,17 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   int _currentIndex = 0;
   final CarouselController _carouselController = CarouselController();
   List<bool> _isSelected = [];
+  late YoutubePlayerController _youtubePlayerController;
   @override
   void initState() {
     final movieDetailProvider = context.read<MovieDetailProvider>();
     movieDetailProvider.getMovieDetails(widget.movieId);
     movieDetailProvider.getMovieImages(widget.movieId);
+    _youtubePlayerController = YoutubePlayerController.fromVideoId(
+      videoId: '<video-id>',
+      autoPlay: false,
+      params: const YoutubePlayerParams(showFullscreenButton: true),
+    );
     super.initState();
   }
 
@@ -187,6 +194,9 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                               ),
                               carouselController: _carouselController,
                             ),
+                          ),
+                          YoutubePlayer(
+                            controller: _youtubePlayerController,
                           )
                         ],
                       ),
