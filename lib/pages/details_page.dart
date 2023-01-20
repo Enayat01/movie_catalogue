@@ -20,40 +20,59 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   final CarouselController _carouselController = CarouselController();
   List<bool> _isSelected = [];
   late YoutubePlayerController _youtubePlayerController;
+  List<String> videoIds = [];
   @override
   void initState() {
+    super.initState();
     final movieDetailProvider = context.read<MovieDetailProvider>();
     movieDetailProvider.getMovieDetails(widget.movieId);
-    movieDetailProvider.getMovieImages(widget.movieId);
-    _youtubePlayerController = YoutubePlayerController.fromVideoId(
-      videoId: '<video-id>',
-      autoPlay: false,
-      params: const YoutubePlayerParams(showFullscreenButton: true),
+    _youtubePlayerController = YoutubePlayerController(
+      params: const YoutubePlayerParams(
+        mute: false,
+        showControls: true,
+        showFullscreenButton: true,
+      ),
     );
-    super.initState();
   }
 
-  List<Widget> generateImageTiles(List<Posters>? posters) {
-    return posters!
-        .map(
-          (element) => ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              posterImageBaseHigh + element.filePath!,
-              fit: BoxFit.cover,
-            ),
-          ),
-        )
-        .toList();
+  List<Widget> generateImageTiles(List<Backdrops>? posters) {
+    return posters
+            ?.map(
+              (element) => ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  posterImageBaseHigh + element.filePath!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+            .toList() ??
+        [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final movieDetailProvider = context.watch<MovieDetailProvider>();
+    videoIds.clear();
+    videoIds = movieDetailProvider.movieDetailModel?.videos?.results
+            ?.map((e) => e.key!)
+            .toList() ??
+        [];
+    _youtubePlayerController.loadPlaylist(
+        list: videoIds, listType: ListType.playlist);
+    print('Videos ids are as follow----------${videoIds.length}');
   }
 
   @override
   Widget build(BuildContext context) {
     final movieDetailProvider = Provider.of<MovieDetailProvider>(context);
     final movieDetails = movieDetailProvider.movieDetailModel;
-    final moviePosters = movieDetailProvider.movieImageModel?.posters;
+    final moviePosters =
+        movieDetailProvider.movieDetailModel?.images?.backdrops;
     final imageItems = generateImageTiles(moviePosters);
-    _isSelected = List.generate(moviePosters!.length, (index) => false);
+    _isSelected = List.generate(moviePosters?.length ?? 0, (index) => false);
+
     return Scaffold(
       extendBodyBehindAppBar:
           ResponsiveWidget.isSmallScreen(context) ? false : true,
@@ -164,10 +183,11 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                               textAlign: TextAlign.center,
                             ),
                           ),
+                          const SizedBox(height: 10),
                           SizedBox(
                             width: ResponsiveWidget.isSmallScreen(context)
                                 ? null
-                                : screenWidth(context) * 0.35,
+                                : screenWidth(context) * 0.70,
                             child: CarouselSlider(
                               items: imageItems,
                               options: CarouselOptions(
@@ -175,8 +195,8 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                                 enlargeCenterPage: true,
                                 aspectRatio:
                                     ResponsiveWidget.isSmallScreen(context)
-                                        ? 8 / 10
-                                        : 8 / 10,
+                                        ? 18 / 10
+                                        : 18 / 10,
                                 onPageChanged: (index, reason) {
                                   setState(() {
                                     _currentIndex = index;
@@ -195,9 +215,18 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                               carouselController: _carouselController,
                             ),
                           ),
-                          YoutubePlayer(
-                            controller: _youtubePlayerController,
-                          )
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: ResponsiveWidget.isSmallScreen(context)
+                                ? null
+                                : screenHeight(context) * .7,
+                            width: ResponsiveWidget.isSmallScreen(context)
+                                ? null
+                                : screenWidth(context) * .7,
+                            child: YoutubePlayer(
+                              controller: _youtubePlayerController,
+                            ),
+                          ),
                         ],
                       ),
                     ),

@@ -11,9 +11,12 @@ class MovieDetailProvider with ChangeNotifier {
   final client = ApiClient(dioProvider());
   bool isLoading = false;
 
-  getMovieDetails(int movieId) {
+  getMovieDetails(int movieId) async {
     isLoading = true;
-    client.getMovieDetails(apiKey, movieId).then((value) {
+    String appendToResponse = 'videos,images';
+    await client
+        .getMovieDetails(movieId, apiKey, appendToResponse)
+        .then((value) {
       movieDetailModel = value;
       isLoading = false;
       notifyListeners();

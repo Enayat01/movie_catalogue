@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:movie_catalogue/utils/constants.dart';
 
 import 'package:provider/provider.dart';
 
@@ -53,30 +54,33 @@ class _AppSearchPageState extends State<AppSearchPage> {
       appBar: AppBar(
         title: Container(
           width: double.infinity,
-          height: 40,
+          height: kToolbarHeight * 0.7,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: whiteColor,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: Center(
-            child: TextField(
-              controller: _textEditingController,
-              onChanged: (value) {
-                movieProvider.page = 1;
-                movieProvider.searchMovieResults.clear();
-                movieProvider.searchMovie(true, value);
-                setState(() {});
-              },
-              decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _textEditingController.clear();
-                    },
-                  ),
-                  hintText: 'Search...',
-                  border: InputBorder.none),
+          child: TextField(
+            controller: _textEditingController,
+            onChanged: (value) {
+              movieProvider.page = 1;
+              movieProvider.searchMovieResults.clear();
+              movieProvider.searchMovie(true, value);
+              setState(() {});
+            },
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _textEditingController.clear();
+                },
+              ),
+              hintText: searchHintApp,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: kToolbarHeight / 5,
+              ),
             ),
           ),
         ),
@@ -99,7 +103,7 @@ class _AppSearchPageState extends State<AppSearchPage> {
                     child: Text(
                       'Search Movies',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: textColor,
                         fontSize: 20,
                       ),
                     ),

@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
+import '../models/movie_video_model.dart';
 import '../models/movie_detail_model.dart';
 import '../models/movie_image_model.dart';
 import '../models/movies_model.dart';
 import 'package:retrofit/http.dart';
-
 import '../utils/constants.dart';
 part 'api_client.g.dart';
 
@@ -45,13 +45,26 @@ abstract class ApiClient {
 
   @GET('/movie/{movieId}')
   Future<MovieDetailModel> getMovieDetails(
-    @Query('api_key') String apiKey,
     @Path('movieId') int movieId,
+    @Query('api_key') String apiKey,
+    @Query('append_to_response') String appendToResponse,
   );
 
   @GET('/movie/{movieId}/images')
   Future<MovieImageModel> getMovieImages(
-      @Query('api_key') String apiKey,
-      @Path('movieId') int movieId,
-      );
+    @Query('api_key') String apiKey,
+    @Path('movieId') int movieId,
+  );
+
+  @GET('/movie/{movieId}/videos')
+  Future<MovieVideoModel> getMovieVideos(
+    @Query('api_key') String apiKey,
+    @Path('movieId') int movieId,
+  );
+
+  @GET('/movie/{movieId}/watch/providers')
+  Future<MovieVideoModel> getWatchProviders(
+    @Query('api_key') String apiKey,
+    @Path('movieId') int movieId,
+  );
 }

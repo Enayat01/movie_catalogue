@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:movie_catalogue/models/movie_image_model.dart';
+import 'package:movie_catalogue/models/movie_video_model.dart';
 
 part 'movie_detail_model.g.dart';
 
@@ -46,6 +48,8 @@ class MovieDetailModel {
   final bool? success;
   @JsonKey(name: 'status_code')
   final String? statusCode;
+  final MovieVideoModel? videos;
+  final MovieImageModel? images;
 
   const MovieDetailModel({
     this.adult,
@@ -76,6 +80,8 @@ class MovieDetailModel {
     this.statusMessage,
     this.success,
     this.statusCode,
+    this.videos,
+    this.images,
   });
 
   factory MovieDetailModel.fromJson(Map<String, dynamic> json) =>

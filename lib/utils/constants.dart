@@ -37,8 +37,9 @@ const backdropShadeColor = Colors.black54;
 const baseUrl = 'https://api.themoviedb.org/3';
 const apiKey = 'afbe66a0ded12ebd4f701d19a2209ee8';
 const String posterImageBase = "https://image.tmdb.org/t/p/w342";
-const String posterImageBaseHigh = "https://image.tmdb.org/t/p/original";
+const String posterImageBaseHigh = "https://image.tmdb.org/t/p/w780";
 const String backdropImageBase = "https://image.tmdb.org/t/p/w780";
+const String backdropImageBaseHigh = "https://image.tmdb.org/t/p/w1280";
 const String logoImageBase = "https://image.tmdb.org/t/p/w300";
 
 const personName = 'Jon De Marve';
@@ -46,6 +47,8 @@ const sortBy = 'Sort by';
 const duration = 'Duration';
 const searchHintWeb = 'Search By Title, Genre and Year';
 const search = 'Search';
+const searchHintApp = 'Search...';
+const appSearchText = 'Search Movies';
 
 /// side bar/left pane texts
 const nowPlayingTitle = 'Now Playing';

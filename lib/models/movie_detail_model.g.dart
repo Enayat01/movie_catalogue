@@ -47,6 +47,12 @@ MovieDetailModel _$MovieDetailModelFromJson(Map<String, dynamic> json) =>
       statusMessage: json['status_message'] as String?,
       success: json['success'] as bool?,
       statusCode: json['status_code'] as String?,
+      videos: json['videos'] == null
+          ? null
+          : MovieVideoModel.fromJson(json['videos'] as Map<String, dynamic>),
+      images: json['images'] == null
+          ? null
+          : MovieImageModel.fromJson(json['images'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MovieDetailModelToJson(MovieDetailModel instance) =>
@@ -79,6 +85,8 @@ Map<String, dynamic> _$MovieDetailModelToJson(MovieDetailModel instance) =>
       'status_message': instance.statusMessage,
       'success': instance.success,
       'status_code': instance.statusCode,
+      'videos': instance.videos,
+      'images': instance.images,
     };
 
 BelongsToCollection _$BelongsToCollectionFromJson(Map<String, dynamic> json) =>
