@@ -28,6 +28,7 @@ final imageCardBackground = Colors.indigo.withOpacity(0.5);
 final listCardBackground = Colors.indigo.withOpacity(0.4);
 const listImageBoxColor = Colors.white54;
 final appBarBackground = Colors.indigo.withOpacity(0.80);
+const webAppBarBackground = Colors.transparent;
 final leftPaneBackground = Colors.indigo.withOpacity(0.95);
 final mainHeaderBackground = Colors.indigo.withOpacity(0.80);
 final subHeaderBackground = Colors.deepPurple.withOpacity(0.60);

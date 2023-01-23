@@ -13,7 +13,7 @@ class MovieDetailProvider with ChangeNotifier {
 
   getMovieDetails(int movieId) async {
     isLoading = true;
-    String appendToResponse = 'videos,images';
+    String appendToResponse = 'videos,images'; //get videos and images
     await client
         .getMovieDetails(movieId, apiKey, appendToResponse)
         .then((value) {

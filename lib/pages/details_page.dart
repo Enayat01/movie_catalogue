@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:flutter/material.dart';
-import '../models/movie_image_model.dart';
 import '../utils/responsive.dart';
 import 'package:provider/provider.dart';
 import '../utils/constants.dart';
@@ -16,11 +15,14 @@ class MovieDetailsPage extends StatefulWidget {
 }
 
 class _MovieDetailsPageState extends State<MovieDetailsPage> {
-  int _currentIndex = 0;
-  final CarouselController _carouselController = CarouselController();
+  int _currentImageIndex = 0;
+  int _currentPosterIndex = 0;
   List<bool> _isSelected = [];
-  late YoutubePlayerController _youtubePlayerController;
   List<String> videoIds = [];
+  List<bool> _isPosterSelected = [];
+  final _carouselController = CarouselController();
+  late YoutubePlayerController _youtubePlayerController;
+
   @override
   void initState() {
     super.initState();
@@ -28,15 +30,30 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
     movieDetailProvider.getMovieDetails(widget.movieId);
     _youtubePlayerController = YoutubePlayerController(
       params: const YoutubePlayerParams(
-        mute: false,
+        mute: true,
         showControls: true,
         showFullscreenButton: true,
       ),
     );
   }
 
-  List<Widget> generateImageTiles(List<Backdrops>? posters) {
-    return posters
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final movieDetailProvider = context.watch<MovieDetailProvider>();
+    videoIds.clear();
+    videoIds = movieDetailProvider.movieDetailModel?.videos?.results
+            ?.map((e) => e.key!)
+            .toList() ??
+        [];
+    _youtubePlayerController.loadPlaylist(
+      list: videoIds,
+      listType: ListType.playlist,
+    );
+  }
+
+  List<Widget> generateImageTiles(List<dynamic>? images) {
+    return images
             ?.map(
               (element) => ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -51,27 +68,16 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final movieDetailProvider = context.watch<MovieDetailProvider>();
-    videoIds.clear();
-    videoIds = movieDetailProvider.movieDetailModel?.videos?.results
-            ?.map((e) => e.key!)
-            .toList() ??
-        [];
-    _youtubePlayerController.loadPlaylist(
-        list: videoIds, listType: ListType.playlist);
-    print('Videos ids are as follow----------${videoIds.length}');
-  }
-
-  @override
   Widget build(BuildContext context) {
     final movieDetailProvider = Provider.of<MovieDetailProvider>(context);
     final movieDetails = movieDetailProvider.movieDetailModel;
-    final moviePosters =
-        movieDetailProvider.movieDetailModel?.images?.backdrops;
-    final imageItems = generateImageTiles(moviePosters);
-    _isSelected = List.generate(moviePosters?.length ?? 0, (index) => false);
+    final movieImages = movieDetailProvider.movieDetailModel?.images?.backdrops;
+    final moviePosters = movieDetailProvider.movieDetailModel?.images?.posters;
+    final movieImageItems = generateImageTiles(movieImages);
+    final moviePosterItems = generateImageTiles(moviePosters);
+    _isSelected = List.generate(movieImages?.length ?? 0, (index) => false);
+    _isPosterSelected =
+        List.generate(moviePosters?.length ?? 0, (index) => false);
 
     return Scaffold(
       extendBodyBehindAppBar:
@@ -79,7 +85,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
       appBar: AppBar(
         backgroundColor: ResponsiveWidget.isSmallScreen(context)
             ? appBarBackground
-            : Colors.transparent,
+            : webAppBarBackground,
         elevation: ResponsiveWidget.isSmallScreen(context) ? null : 0,
       ),
       body: movieDetailProvider.isLoading
@@ -94,7 +100,7 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                   ),
                 )
 
-              ///Using this container to set backdrop image background
+              ///Using this container to set backdrop as image background
               : Container(
                   height: double.infinity,
                   width: double.infinity,
@@ -115,119 +121,158 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
                   child: Container(
                     color: backdropShadeColor,
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              screenWidth(context) * 0.05,
-                              ResponsiveWidget.isSmallScreen(context)
-                                  ? screenHeight(context) * 0.05
-                                  : screenHeight(context) * 0.10,
-                              screenWidth(context) * 0.05,
-                              screenHeight(context) * 0.05,
-                            ),
-                            child: Column(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          screenWidth(context) * 0.05,
+                          ResponsiveWidget.isSmallScreen(context)
+                              ? screenHeight(context) * 0.05
+                              : screenHeight(context) * 0.10,
+                          screenWidth(context) * 0.05,
+                          screenHeight(context) * 0.05,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${movieDetails.title} (${movieDetails.releaseDate?.substring(0, 4)})',
-                                  style: TextStyle(
-                                    fontSize:
-                                        ResponsiveWidget.isSmallScreen(context)
-                                            ? 26
-                                            : 28,
-                                    color: textColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10.0),
-                                  child: FittedBox(
-                                    child: Text(
-                                      movieDetails.tagline ?? '',
-                                      style: const TextStyle(
-                                          color: textColorLight70,
-                                          fontSize: 22,
-                                          fontStyle: FontStyle.italic),
+                                SizedBox(
+                                  height: screenHeight(context) * 0.45,
+                                  width: ResponsiveWidget.isSmallScreen(context)
+                                      ? null
+                                      : null,
+                                  child: CarouselSlider(
+                                    items: moviePosterItems,
+                                    options: CarouselOptions(
+                                      autoPlay: true,
+                                      aspectRatio:
+                                          ResponsiveWidget.isSmallScreen(
+                                                  context)
+                                              ? 4 / 4
+                                              : 4 / 3,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          _currentPosterIndex = index;
+                                          for (_currentPosterIndex = 0;
+                                              _currentPosterIndex <
+                                                  movieImageItems.length;
+                                              _currentPosterIndex++) {
+                                            if (_currentPosterIndex == index) {
+                                              _isPosterSelected[
+                                                  _currentPosterIndex] = true;
+                                            } else {
+                                              _isPosterSelected[
+                                                  _currentPosterIndex] = false;
+                                            }
+                                          }
+                                        });
+                                      },
                                     ),
+                                    carouselController: _carouselController,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${movieDetails.title} (${movieDetails.releaseDate?.substring(0, 4)})',
+                                        style: TextStyle(
+                                          fontSize:
+                                              ResponsiveWidget.isSmallScreen(
+                                                      context)
+                                                  ? 26
+                                                  : 28,
+                                          color: textColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: screenHeight(context) / 80,
+                                          bottom: screenHeight(context) / 30,
+                                        ),
+                                        child: Text(
+                                          movieDetails.tagline ?? '',
+                                          style: const TextStyle(
+                                              color: textColorLight70,
+                                              fontSize: 22,
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                      ),
+                                      const Text(
+                                        overview,
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: textColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        movieDetails.overview ?? '',
+                                        style: TextStyle(
+                                          fontSize:
+                                              ResponsiveWidget.isSmallScreen(
+                                                      context)
+                                                  ? 16
+                                                  : 20,
+                                          color: textColor,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const Text(
-                            overview,
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: textColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  ResponsiveWidget.isSmallScreen(context)
-                                      ? screenWidth(context) * 0.12
-                                      : screenWidth(context) * 0.25,
-                              vertical: 10,
-                            ),
-                            child: Text(
-                              movieDetails.overview ?? '',
-                              style: TextStyle(
-                                fontSize:
-                                    ResponsiveWidget.isSmallScreen(context)
-                                        ? 16
-                                        : 20,
-                                color: textColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: ResponsiveWidget.isSmallScreen(context)
-                                ? null
-                                : screenWidth(context) * 0.70,
-                            child: CarouselSlider(
-                              items: imageItems,
-                              options: CarouselOptions(
-                                autoPlay: true,
-                                enlargeCenterPage: true,
-                                aspectRatio:
-                                    ResponsiveWidget.isSmallScreen(context)
-                                        ? 18 / 10
-                                        : 18 / 10,
-                                onPageChanged: (index, reason) {
-                                  setState(() {
-                                    _currentIndex = index;
-                                    for (int itemIndex = 0;
-                                        itemIndex < imageItems.length;
-                                        itemIndex++) {
-                                      if (itemIndex == index) {
-                                        _isSelected[itemIndex] = true;
-                                      } else {
-                                        _isSelected[itemIndex] = false;
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: ResponsiveWidget.isSmallScreen(context)
+                                  ? null
+                                  : screenWidth(context) * 0.70,
+                              child: CarouselSlider(
+                                items: movieImageItems,
+                                options: CarouselOptions(
+                                  autoPlay: true,
+                                  enlargeCenterPage: true,
+                                  aspectRatio:
+                                      ResponsiveWidget.isSmallScreen(context)
+                                          ? 21 / 10
+                                          : 18 / 8,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _currentImageIndex = index;
+                                      for (_currentImageIndex = 0;
+                                          _currentImageIndex <
+                                              movieImageItems.length;
+                                          _currentImageIndex++) {
+                                        if (_currentImageIndex == index) {
+                                          _isSelected[_currentImageIndex] =
+                                              true;
+                                        } else {
+                                          _isSelected[_currentImageIndex] =
+                                              false;
+                                        }
                                       }
-                                    }
-                                  });
-                                },
+                                    });
+                                  },
+                                ),
+                                carouselController: _carouselController,
                               ),
-                              carouselController: _carouselController,
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            height: ResponsiveWidget.isSmallScreen(context)
-                                ? null
-                                : screenHeight(context) * .7,
-                            width: ResponsiveWidget.isSmallScreen(context)
-                                ? null
-                                : screenWidth(context) * .7,
-                            child: YoutubePlayer(
-                              controller: _youtubePlayerController,
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              height: ResponsiveWidget.isSmallScreen(context)
+                                  ? null
+                                  : screenHeight(context) * .70,
+                              width: ResponsiveWidget.isSmallScreen(context)
+                                  ? null
+                                  : screenWidth(context) * 0.70,
+                              child: YoutubePlayer(
+                                controller: _youtubePlayerController,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
